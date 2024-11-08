@@ -1,20 +1,37 @@
-<ion-header [translucent]="true">
+<ion-content [fullscreen]="true" *ngIf="user">
+  <audio controls autoplay loop>
+    <source src="assets/audio/wii.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
   <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+    <ion-avatar>
+      <img src="https://openrevista.com/wp-content/uploads/2020/02/bojack-horseman-y-la-salud-mental.jpg" />
+    </ion-avatar>
+    <ion-label>
+      <h2 >{{ user?.displayName || 'Not Signed In' }}</h2>
+      <p>Email: <span> {{ user?.email }}</span></p>
+    </ion-label>
   </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+  <div class="flex-center">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Asistencia</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <form [formGroup]="homeForm" >
+          <ion-item>
+            <ion-label position="floating" >Nombre</ion-label>
+            <ion-input formControlName="fullname"type="text" ></ion-input>
+          </ion-item>
+            <div *ngIf="this.homeForm.controls?.['fullname'].touched && this.homeForm.controls?.['fullname'].invalid">
+              <ion-text *ngIf="errorControl.fullname.errors?.required " color="danger">
+                Nombre Requerido
+              </ion-text>
+            </div>
+          </form>
+        <ion-button size="full" shape="round" color="dark" (click)="updateUser()" >Guardar Nombre</ion-button>  
+        <ion-button size="full" shape="round" color="dark" (click)="logout()" >Salir</ion-button>
+      </ion-card-content>
+    </ion-card>
   </div>
 </ion-content>
