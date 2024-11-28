@@ -11,6 +11,7 @@
       "prefix": "app",
       "architect": {
         "build": {
+          
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
             "outputPath": "www",
@@ -19,6 +20,10 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "allowedCommonJsDependencies": [
+              "qrcode",
+              "html2canvas"
+            ],
             "assets": [
               {
                 "glob": "**/*",

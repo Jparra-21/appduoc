@@ -1,8 +1,9 @@
-<ion-content [fullscreen]="true" *ngIf="user">
-  <audio controls autoplay loop>
+<ion-content [fullscreen]="true" *ngIf="user" class="ion-padding ion-text-center">
+  <!-- <audio controls autoplay loop>
     <source src="assets/audio/wii.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
-  </audio>
+  </audio> -->
+  
   <ion-toolbar>
     <ion-avatar>
       <img src="https://openrevista.com/wp-content/uploads/2020/02/bojack-horseman-y-la-salud-mental.jpg" />
@@ -12,26 +13,117 @@
       <p>Email: <span> {{ user?.email }}</span></p>
     </ion-label>
   </ion-toolbar>
-  <div class="flex-center">
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Asistencia</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <form [formGroup]="homeForm" >
-          <ion-item>
-            <ion-label position="floating" >Nombre</ion-label>
-            <ion-input formControlName="fullname"type="text" ></ion-input>
-          </ion-item>
-            <div *ngIf="this.homeForm.controls?.['fullname'].touched && this.homeForm.controls?.['fullname'].invalid">
-              <ion-text *ngIf="errorControl.fullname.errors?.required " color="danger">
-                Nombre Requerido
-              </ion-text>
-            </div>
-          </form>
-        <ion-button size="full" shape="round" color="dark" (click)="updateUser()" >Guardar Nombre</ion-button>  
-        <ion-button size="full" shape="round" color="dark" (click)="logout()" >Salir</ion-button>
-      </ion-card-content>
-    </ion-card>
+  
+  <ion-segment [{ngModule}]="segment">
+    <ion-segment-button (click)="segment ='user'">
+      <ion-label>User</ion-label>
+    </ion-segment-button>
+    
+    <ion-segment-button (click)="segment ='scan'">
+      <ion-label>Scan QR</ion-label>
+    </ion-segment-button>
+
+    <ion-segment-button (click)="segment ='generate'">
+      <ion-label>Generate QR</ion-label>
+    </ion-segment-button>
+
+  </ion-segment>
+<!-- Usuarios -->
+  <div *ngIf="segment ==='user'">
+    <h2>{{user?.displayName}}</h2>
+    <div class="flex-center">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Asistencia</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <form [formGroup]="homeForm" >
+            <ion-item>
+              <ion-label position="floating" >Nombre</ion-label>
+              <ion-input formControlName="fullname"type="text" ></ion-input>
+            </ion-item>
+              <div *ngIf="this.homeForm.controls?.['fullname'].touched && this.homeForm.controls?.['fullname'].invalid">
+                <ion-text *ngIf="errorControl.fullname.errors?.required " color="danger">
+                  Nombre Requerido
+                </ion-text>
+              </div>
+            </form>
+          <ion-button size="full" shape="round" color="dark" (click)="updateUser()" >Guardar Nombre</ion-button>  
+          <ion-button size="full" shape="round" color="dark" (click)="logout()" >Salir</ion-button>
+        </ion-card-content>
+      </ion-card>
+    </div>
   </div>
+  <!-- Scan -->
+  <div class="segment" *ngIf="segment ==='scan'">
+    <div class="segment-content">
+
+      <img src="assets/images/scan-qr.webp" alt="">
+      <h6 class="scan-label">Escanea el codigo QR</h6>
+
+      <ion-row>
+        <ion-col size="6">
+        <ion-button (click)="startScan()" class="submit" expand="block">
+          Scan
+          <ion-icon slot="end" name="scan-outline"></ion-icon>
+        </ion-button>
+        </ion-col>
+        <ion-col size="6">
+          <ion-button (click)="readBarCodeFromImage()" class="submit" expand="block">
+            Select
+            <ion-icon slot="end" name="image-outline"></ion-icon>
+          </ion-button>
+          </ion-col>
+      </ion-row>
+
+      <ion-item class="result" *ngIf="scanResult" lines="none">
+        <ion-label>
+          <p color="light">Scan Result</p>
+          <div color="light">{{scanResult}}</div>
+        </ion-label>
+        <ion-buttons slot="end">
+          
+          <ion-button *ngIf="isUrl()" (click)="openCapacitorSite()">
+            <ion-icon slot="icon-only" name="globe-outline"></ion-icon>
+          </ion-button>
+          
+          <ion-button (click)="writeToClipboard()">
+            <ion-icon slot="icon-only" name="copy-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-item>
+
+    </div>
+  </div>
+  <!-- Generate -->
+  <div class="segment" *ngIf="segment ==='generate'">
+    <div class="segment-content">
+      
+      <div id="qrImage">
+        <div class="flex-center">
+          <div class="flex-center qr-wrapper">
+            <qr-code *ngIf="qrText" [value]="qrText" size="190" errorCorrectionLevel="M" />
+            <img *ngIf="!qrText" class="qr-placeholder" src="assets/images/qr.webp">
+          </div>
+        </div>
+        <div class="ion-padding-top"> {{qrText}}</div>
+      </div>
+
+      <ion-textarea 
+      label="Escribe algo para el codigo QR" 
+      labelPlacement="stacked"
+      fill="outline"
+      [(ngModel)]="qrText"
+      rows="4"
+      [autoGrow]="true">
+      </ion-textarea>
+
+      <!-- Share -->
+       <ion-button (click)="captureScreen()" *ngIf="qrText" class="submit ion-margin-top" expand="block">
+        Share
+        <ion-icon slot="end" name="share-social-outline"></ion-icon>
+       </ion-button>
+    </div>
+  </div>
+
 </ion-content>
